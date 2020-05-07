@@ -53,7 +53,7 @@ class CalcStatus(object):
         self.fullsize = fullsize
         self.relconcsize = relconcsize
         self.arf = arf
-        self.error: str = str(error) if isinstance(error, BaseException) else error
+        self.error: Optional[str] = str(error) if isinstance(error, BaseException) else error
         self.finished = finished
 
     def to_dict(self) -> Dict[str, Any]:
@@ -69,7 +69,7 @@ class CalcStatus(object):
         return None
 
     def has_some_result(self, minsize: int) -> bool:
-        return minsize == -1 and self.finished or self.concsize >= minsize
+        return minsize == -1 and self.finished or self.concsize and self.concsize >= minsize
 
     def update(self, **kw) -> 'CalcStatus':
         for k, v in kw.items():
@@ -127,7 +127,7 @@ class AbstractConcCache(abc.ABC):
         """
 
     @abc.abstractmethod
-    def add_to_map(self, subchash: Optional[str], query: QueryType, size: int, calc_status: CalcStatus = None) -> Tuple[str, CalcStatus]:
+    def add_to_map(self, subchash: Optional[str], query: QueryType, size: int, calc_status: Optional[CalcStatus] = None) -> Tuple[str, CalcStatus]:
         """
         Add or update a cache map entry
 
